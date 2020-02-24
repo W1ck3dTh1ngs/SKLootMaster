@@ -150,7 +150,7 @@ Label(window, bg="#202533", fg="#ffffff",
 global_frame = Frame(window, bg="#202533", borderwidth=5,
                      relief="sunken")
 global_frame.pack()
-global_list = Listbox(global_frame, bg="#202533", fg="#ffffff",
+global_list = Listbox(global_frame, bg="#202533", fg="#212121",
                       font=("Helvetica", 12),
                       height=20, width=25, selectmode="extended")
 global_list.pack(fill="y", side="left")
@@ -173,21 +173,21 @@ sk_tracker = []
 
 def class_color(card):
     if card['labels'][0]['name'] == "Warrior":
-        color = "#331a00"
+        color = "#C79C6E"
     elif card['labels'][0]['name'] == "Druid":
-        color = "#803300"
+        color = "#FF7D0A"
     elif card['labels'][0]['name'] == "Hunter":
-        color = "#003300"
+        color = "#A9D271"
     elif card['labels'][0]['name'] == "Mage":
-        color = "#006666"
+        color = "#40C7EB"
     elif card['labels'][0]['name'] == "Priest":
-        color = "#404040"
+        color = "#ffffff"
     elif card['labels'][0]['name'] == "Rogue":
-        color = "#666600"
+        color = "#FFF569"
     elif card['labels'][0]['name'] == "Shaman":
-        color = "#000066"
+        color = "#0070DE"
     elif card['labels'][0]['name'] == "Warlock":
-        color = "#330033"
+        color = "#8787ED"
     return color
 
 
@@ -683,14 +683,14 @@ Label(window, bg="#202533", fg="#ffffff",
             f"{config['trello']['tier_live']}  |  Filters")).pack()
 main_frame = Frame(window, bg="#202533", borderwidth=5, relief="raised")
 main_frame.pack()
-main_list = Listbox(main_frame, bg="#202533", fg="#ffffff",
+main_list = Listbox(main_frame, bg="#202533", fg="#212121",
                     font=("Helvetica", 12), height=20, width=25)
 main_list.pack(side="left", fill="y")
 ml_scrollbar = Scrollbar(main_frame, orient="vertical")
 ml_scrollbar.config(command=main_list.yview)
 ml_scrollbar.pack(side="left", fill="y")
 main_list.config(yscrollcommand=ml_scrollbar.set)
-tier_list = Listbox(main_frame, bg="#202533", fg="#ffffff",
+tier_list = Listbox(main_frame, bg="#202533", fg="#212121",
                     font=("Helvetica", 12), height=20, width=25)
 tier_list.pack(side="left", fill="y")
 tl_scrollbar = Scrollbar(main_frame, orient="vertical")

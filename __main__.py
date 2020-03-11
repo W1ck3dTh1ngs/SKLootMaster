@@ -559,7 +559,8 @@ def merge_lists():
                 main_pull_card_id = current_data.main_pull_cards[i]["id"]
                 qparams["idList"] = current_data.main_pull_id
                 qparams["pos"] = current_data.main_pull_cards[i]["pos"]
-                print(f"Main merging {current_data.main_live_cards[0]['name']}")
+                print("Main merging "
+                      f"{current_data.main_live_cards[0]['name']}")
                 resp1 = Trello("PUT",
                                f"/1/cards/{main_live_card_id}",
                                qparams,
@@ -581,7 +582,8 @@ def merge_lists():
                 tier_pull_card_id = current_data.tier_pull_cards[i]["id"]
                 qparams["idList"] = current_data.tier_pull_id
                 qparams["pos"] = current_data.tier_pull_cards[i]["pos"]
-                print(f"Tier merging {current_data.tier_live_cards[0]['name']}")
+                print("Tier merging "
+                      f"{current_data.tier_live_cards[0]['name']}")
                 resp3 = Trello("PUT",
                                f"/1/cards/{tier_live_card_id}",
                                qparams,

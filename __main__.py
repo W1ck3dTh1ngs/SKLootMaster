@@ -3,7 +3,6 @@
 import configparser
 import os
 import requests
-import threading
 from tkinter import *
 
 

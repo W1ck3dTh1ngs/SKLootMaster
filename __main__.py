@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import configparser
+import logging
 import os
 import requests
 from tkinter import *
@@ -15,6 +16,19 @@ config.read(fn)
 # Set json for key and token to be used with query params
 auth = {"key": config["auth"]["key"],
         "token": config["auth"]["secret"]}
+
+# Define logging
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+event_log = logging.getLogger("events")
+event_log.setLevel(logging.INFO)
+fh = logging.FileHandler("events.log")
+fh.setLevel(logging.INFO)
+fh.setFormatter(formatter)
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+ch.setFormatter(formatter)
+event_log.addHandler(fh)
+event_log.addHandler(ch)
 
 
 ###############################################################################
@@ -40,7 +54,7 @@ class Trello:
         if resp.status_code is not 200:
             print(f"API request failed with status: {resp.status_code}")
             return resp.content
-        return resp
+        return resp.json()
 
 
 ###############################################################################
@@ -51,8 +65,8 @@ class Trello_Data:
                                 f"/1/boards/{config['trello']['board_id']}"
                                 f"/lists",
                                 auth,
-                                None).get_response().json()
-        self.all_cards = self.batch_get_cards(self.all_lists)
+                                None).get_response()
+        self.all_cards = self.batch_get_cards()
         for list in self.all_lists:
             try:
                 if list["name"] == config["trello"]["main_master"]:
@@ -106,9 +120,9 @@ class Trello_Data:
         self.members = sorted(self.main_master_cards,
                               key=lambda i: (i['name']))
 
-    def batch_get_cards(self, lists):
+    def batch_get_cards(self):
         batch_urls = []
-        for list in lists:
+        for list in self.all_lists:
             batch_urls.append(f"/lists/{list['id']}/cards")
         batch_params = auth
         batch_params["urls"] = batch_urls
@@ -116,7 +130,7 @@ class Trello_Data:
             batch_response = Trello("GET",
                                     f"/1/batch",
                                     batch_params,
-                                    None).get_response().json()
+                                    None).get_response()
         except Exception as e:
             print(e)
         del batch_params["urls"]
@@ -153,6 +167,7 @@ def class_color(card):
 
 def refresh_tklists():
     print("Refreshing lists...")
+    global_list.delete(0, "end")
     main_list.delete(0, "end")
     tier_list.delete(0, "end")
     active_filters = []
@@ -218,7 +233,7 @@ def create_lists():
     qparams = auth
     if check_lists():
         log_list.insert("end",
-                        "A pull/live list already exists.")
+                        "Already exists: pull/live.")
         return False
     qparams["idBoard"] = config['trello']['board_id']
     qparams["name"] = config["trello"]["main_pull"]
@@ -255,7 +270,10 @@ def create_lists():
     del qparams["idBoard"], qparams["name"], qparams["pos"]
     current_data = Trello_Data()
     refresh_tklists()
-    print("Done creating pull/live.")
+    print("Created: pull/live")
+    event_log.info("Created: pull/live")
+    log_list.insert("end",
+                    "Created: pull/live")
     return True
 
 
@@ -264,7 +282,7 @@ def add_to_raid():
     current_data = Trello_Data()
     if not check_lists():
         log_list.insert("end",
-                        "Missing pull/live lists.")
+                        "Missing: pull/live")
         return False
     qparams = auth
     for name in chosen_player("Extended"):
@@ -306,13 +324,14 @@ def add_to_raid():
                                qparams,
                                None).get_response()
                 del qparams["name"], main_card_id, tier_card_id
-                print("Finished adding.")
+                print(f"Added: {name}")
+                event_log.info(f"Added: {name}")
                 log_list.insert("end",
-                                f"{name} added to live lists.")
+                                f"Added: {name}")
         except NameError:
             print(f"Unable to add {name}. May have already been added.")
             log_list.insert("end",
-                            f"Unable to add {name}.")
+                            f"Unable to add: {name}")
             continue
     current_data = Trello_Data()
     refresh_tklists()
@@ -324,7 +343,7 @@ def remove_from_raid():
     current_data = Trello_Data()
     if not check_lists():
         log_list.insert("end",
-                        "Missing pull/live lists.")
+                        "Missing: pull/live")
         return False
     qparams = auth
     for name in chosen_player("Extended"):
@@ -381,9 +400,10 @@ def remove_from_raid():
                                qparams,
                                None).get_response()
                 del main_live_card_id, tier_live_card_id
-                print("Finished removing.")
+                print(f"Removed: {name}")
+                event_log.info(f"Removed: {name}")
                 log_list.insert("end",
-                                f"{name} removed from live lists.")
+                                f"Removed: {name}")
         except NameError:
             print(f"Unable to remove {name}. May have already been removed.")
             log_list.insert("end",
@@ -427,7 +447,7 @@ def chosen_player(limit_type):
             selection = tier_list.curselection()
         else:
             log_list.insert("end",
-                            "Requires  1 selection.")
+                            "Requires 1 selection.")
             return False
         name = slist.get(selection)[:slist.get(selection).index(" ")]
         return name
@@ -457,7 +477,7 @@ def chosen_player(limit_type):
 def suicide(name, sklist):
     if not check_lists():
         log_list.insert("end",
-                        "Missing pull/live lists.")
+                        "Missing: pull/live")
         return False
     qparams = auth
     if sklist == "Main":
@@ -484,9 +504,10 @@ def suicide(name, sklist):
                 break
         del qparams["pos"]
         sk_tracker.append(sk_data)
-        print(f"{name} used Main SK.")
+        event_log.info(f"Main SK: {name}")
+        print(f"Main SK: {name}")
         log_list.insert("end",
-                        f"{name} used Main SK.")
+                        f"Main SK: {name}")
         return True
     if sklist == "Tier":
         for card in current_data.main_live_cards:
@@ -508,9 +529,10 @@ def suicide(name, sklist):
                 break
         del qparams["pos"]
         sk_tracker.append(sk_data)
-        print(f"{name} used Tier SK.")
+        event_log.info(f"Tier SK: {name}")
+        print(f"Tier SK: {name}")
         log_list.insert("end",
-                        f"{name} used Tier SK.")
+                        f"Tier SK: {name}")
         return True
 
 
@@ -533,6 +555,8 @@ def undosk():
                    qparams,
                    None).get_response()
     del qparams["pos"]
+    event_log.info(f"SK undone: {sk_tracker[-1]['name']}")
+    print(f"SK undone: {sk_tracker[-1]['name']}")
     log_list.insert("end",
                     f"SK undone: {sk_tracker[-1]['name']}")
     sk_tracker.pop(-1)
@@ -545,7 +569,7 @@ def merge_lists():
     global current_data
     if not check_lists():
         log_list.insert("end",
-                        "Missing pull/live lists.")
+                        "Missing: pull/live")
         return False
     print("Merging Live lists into Pull lists...\n"
           "This can take a while...")
@@ -612,9 +636,10 @@ def merge_lists():
     except AttributeError:
         pass
     del qparams["value"]
-    print("Merge complete.")
+    print("Merged: live lists")
+    event_log.info("Merged: live lists")
     log_list.insert("end",
-                    "Live merged to pull.")
+                    "Merged: live lists")
     refresh_tklists()
     return True
 

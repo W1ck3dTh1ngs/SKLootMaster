@@ -18,3 +18,4 @@ TODO:
   Documentation  
   Add new player card  
   Edit labels  
+  Loot tracker

@@ -10,8 +10,11 @@ Current Features:
   Class Filtering  
   UndoSK  
   Windows executable  
+  Events log  
 
 TODO:    
   Rebuild lists from json  
   config.txt controls  
   Documentation  
+  Add new player card  
+  Edit labels  

@@ -429,6 +429,8 @@ def tiersk():
     global current_data
     if chosen_player("Single") is not False:
         suicide(chosen_player("Single"), "Tier")
+    else:
+        return False
     current_data = Trello_Data()
     refresh_tklists()
     return True
@@ -497,12 +499,14 @@ def suicide(name, sklist):
             if card["name"] == name:
                 sk_data["tier_id"] = card["id"]
                 sk_data["tier_pos"] = card["pos"]
-                resp2 = Trello("PUT",
-                               f"/1/cards/{sk_data['tier_id']}",
-                               qparams,
-                               None).get_response()
                 break
-        del qparams["pos"]
+        try:
+            del qparams["pos"]
+        except KeyError:
+            print(f"{name} not on live lists.")
+            log_list.insert("end",
+                            f"{name} not on live lists.")
+            return False
         sk_tracker.append(sk_data)
         event_log.info(f"Main SK: {name}")
         print(f"Main SK: {name}")

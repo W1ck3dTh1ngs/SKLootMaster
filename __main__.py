@@ -154,6 +154,8 @@ def class_color(card):
         color = config["colors"]["hunter"]
     elif card["labels"][0]["name"] == "Mage":
         color = config["colors"]["mage"]
+    elif card["labels"][0]["name"] == "Paladin":
+        color = config["colors"]["paladin"]
     elif card["labels"][0]["name"] == "Priest":
         color = config["colors"]["priest"]
     elif card["labels"][0]["name"] == "Rogue":
@@ -175,7 +177,7 @@ def refresh_tklists():
         if value.get() == 1:
             active_filters.append(key)
     if len(active_filters) == 0:
-        active_filters = ["druid", "hunter", "mage",
+        active_filters = ["druid", "hunter", "mage", "paladin",
                           "priest", "rogue", "shaman",
                           "warlock", "warrior"]
     main_count = 0
@@ -724,8 +726,8 @@ merge_button = Button(global_frame, bg="#2c3b47", fg="#ffffff",
                       command=merge_lists,
                       text="Merge lists", width=25)
 filters = {"druid": IntVar(), "hunter": IntVar(), "mage": IntVar(),
-           "priest": IntVar(), "rogue": IntVar(), "shaman": IntVar(),
-           "warlock": IntVar(), "warrior": IntVar()}
+           "paladin": IntVar(), "priest": IntVar(), "rogue": IntVar(),
+           "shaman": IntVar(), "warlock": IntVar(), "warrior": IntVar()}
 druid_filter = Checkbutton(main_frame, text="Druid",
                            variable=filters["druid"],
                            bg=config["colors"]["druid"], fg="#000000",
@@ -741,6 +743,12 @@ hunter_filter = Checkbutton(main_frame, text="Hunter",
 mage_filter = Checkbutton(main_frame, text="Mage",
                           variable=filters["mage"],
                           bg=config["colors"]["mage"], fg="#000000",
+                          font=("Helvetica", 12),
+                          height=1, width=15, anchor="w",
+                          highlightcolor="#D94A66")
+paladin_filter = Checkbutton(main_frame, text="Paladin",
+                          variable=filters["paladin"],
+                          bg=config["colors"]["paladin"], fg="#000000",
                           font=("Helvetica", 12),
                           height=1, width=15, anchor="w",
                           highlightcolor="#D94A66")
@@ -808,6 +816,7 @@ tl_scrollbar.pack(side="left", fill="y")
 druid_filter.pack(side="top")
 hunter_filter.pack(side="top")
 mage_filter.pack(side="top")
+paladin_filter.pack(side="top")
 priest_filter.pack(side="top")
 rogue_filter.pack(side="top")
 shaman_filter.pack(side="top")

@@ -1,0 +1,25 @@
+[auth]
+key = TrelloKey
+secret = TrelloSecret
+
+[trello]
+board_id = id
+# Names of lists used
+main_master = Main Master List
+tier_master = Tier Master List
+main_pull = Main Pull List
+tier_pull = Tier Pull List
+main_live = Main Live List
+tier_live = Tier Live List
+
+[colors]
+warrior = #C79C6E
+druid = #FF7D0A
+hunter = #A9D271
+mage = #40C7EB
+paladin = #F48CBA
+priest = #FFFFFF
+rogue = #FFF569
+shaman = #0070DE
+warlock = #8787ED
+text = #212121
